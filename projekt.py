@@ -27,7 +27,7 @@ ajutine = np.fft.fft(tulemused.ravel())
 # põhivõnkesageduse leidmine
 pohiVonkeSagedus = np.argmax(abs(ajutine[:int(ajutine.size/2)]))
 # numpy Fourier sageduse funktsioon
-sagedused = np.fft.fftfreq(len(idunno))
+sagedused = np.fft.fftfreq(len(ajutine))
 # tegeliku sageduse leidmine
 tuvastatudSagedus = sagedused[pohiVonkeSagedus]*fs
 # selle väljastamine
