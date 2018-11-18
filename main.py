@@ -1,6 +1,8 @@
 import pyaudio
 import numpy as np
 
+intervallid = ["p. 1", "v. 2", "s. 2", "v. 3", "s. 3", "p. 4", "p. 5", "v. 6", "s. 6", "v. 7", "s. 7", "p.8"]
+
 def genereerisagedus(noot):
     sagedus = np.power(np.power(2, 1/12),noot-49)*440 #A4, 49. noot, sagedus 440Hz
     return sagedus
@@ -34,16 +36,6 @@ def tuvastasagedus():
     sisend = p.open(format=pyaudio.paInt16, channels=1, rate=fs, input=True, frames_per_buffer=1024)
     # test
     tulemused = np.array([], dtype=np.int16)
-    # alustab salvestamist, kuni vajutatakse kas CTRL + C või siis Del klahvi
-    # print("Time to stop")
-    # try:
-    #     while True:
-    #         print("CTRL+C lõpetab salvestamise")
-    #         andmed = sisend.read(1024)
-    #         uuedAndmed = np.frombuffer(andmed, dtype=np.int16)
-    #         tulemused = np.append(tulemused, uuedAndmed)
-    # except KeyboardInterrupt:
-    #     print("Salvestus lõppenud")
     andmed = sisend.read(1024*50)
     tulemused = np.frombuffer(andmed, dtype=np.int16)
 
@@ -73,8 +65,8 @@ def võrdlenoote(cent1, cent2):
     return erinevus
 
 def noodinimi(noot):
-    noodinimed = ["G#","A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G"]
-    nimi = noodinimed[noot%12]
+    noodinimed = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+    nimi = noodinimed[(noot-1)%12]
     return nimi
 
 def võrdle(minimum=40, maximum=61): #genereerib sageduse ning väljastab kasutaja sisendi erinevuse tegelikkusest
@@ -111,13 +103,38 @@ def arvanoot(minimum=40, maximum=61):
     else:
         print("Õige noot oli hoopis", nimi)
 
+def arvaintervall(minimum=40, maximum=61):
+    print("Järgnevalt kuuled noote, mille vahelise intervalli pead ära tuvastama ning seejärel esitama. Kui oled valmis, vajuta ENTER.")
+    input()
+    print("Kuula noote:")
+    noot1 = np.random.randint(minimum, maximum)
+    sagedus1 = genereerisagedus(noot1)
+    noot2 = noot1 + np.random.randint(-12, 13)
+    sagedus2 = genereerisagedus(noot2)
+
+    genereerihääl([sagedus1, sagedus2], 5)
+    genereerihääl([sagedus1], 5)
+    genereerihääl([sagedus2], 5)
+    genereerihääl([sagedus1, sagedus2], 5)
+
+    intervall = intervallid[np.abs(noot1-noot2)]
+    pakkumine = input("Sisesta intervall:")
+
+    if pakkumine == intervall:
+        print("Õige, intervall oli tõesti", intervall)
+    else:
+        print("Õige intervall oli hoopis", intervall)
+
+
+
 
 def ui():
     print("")
     print("#####################")
     print("# 1) Korda nooti    #")
     print("# 2) Arva noot      #")
-    print("# 3) Välju          #")
+    print("# 3) Arva intervall #")
+    print("# 4) Välju          #")
     print("#####################")
     print("")
     valik = int(input())
@@ -128,14 +145,14 @@ def ui():
         arvanoot()
         ui()
     elif valik == 3:
+        arvaintervall()
+        ui()
+    elif valik == 4:
         print("#####################")
         print("#                   #")
         print("#    Nägemiseni!    #")
         print("#                   #")
         print("#####################")
-#genereerihääl([genereerisagedus(49), genereerisagedus(53), genereerisagedus(56)]) #Mitu nooti korraga
-#genereerihääl([genereerisagedus(61)]) #Üksik noot
-#print(tuvastanoot(284.81))
-#võrdle()
-#arvanoot()
+
+
 ui()
